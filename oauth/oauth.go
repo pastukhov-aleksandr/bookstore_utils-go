@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/pastukhov-aleksandr/bookstore_aouth_api/utils/secret_code"
 	"github.com/pastukhov-aleksandr/bookstore_utils-go/rest_errors"
+	"github.com/pastukhov-aleksandr/bookstore_utils-go/secret_code"
 )
 
 const (
@@ -38,8 +38,8 @@ func extractToken(r *http.Request) string {
 
 func verifyToken(r *http.Request) (*jwt.Token, error) {
 	tokenString := extractToken(r)
-	access_sicret := secret_code.Get_ACCESS_SECRET()
-	if access_sicret == "" {
+	accessSicret := secret_code.Get_ACCESS_SECRET()
+	if accessSicret == "" {
 		return nil, fmt.Errorf("invalid env file")
 	}
 
@@ -48,7 +48,7 @@ func verifyToken(r *http.Request) (*jwt.Token, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(access_sicret), nil
+		return []byte(accessSicret), nil
 	})
 	if err != nil {
 		return nil, err
