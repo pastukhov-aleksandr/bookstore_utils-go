@@ -16,8 +16,8 @@ const (
 )
 
 type AccessDetails struct {
-	UserID   uint64
-	ClientID uint64
+	UserID   int64
+	ClientID int64
 }
 
 func AuthenticateRequest(request *http.Request) (*AccessDetails, rest_errors.RestErr) {
@@ -81,11 +81,11 @@ func extractTokenMetadata(r *http.Request) (*AccessDetails, error) {
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
-		userId, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["user_id"]), 10, 64)
+		userId, err := strconv.ParseInt(fmt.Sprintf("%.f", claims["user_id"]), 10, 64)
 		if err != nil {
 			return nil, err
 		}
-		clientId, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["client_id"]), 10, 64)
+		clientId, err := strconv.ParseInt(fmt.Sprintf("%.f", claims["client_id"]), 10, 64)
 		if err != nil {
 			return nil, err
 		}
