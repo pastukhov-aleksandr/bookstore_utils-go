@@ -15,15 +15,22 @@ const (
 	paramAccessToken = "access_token"
 )
 
-func AuthenticateRequest(request *http.Request) (int64, rest_errors.RestErr) {
+type AccessDetails struct {
+	UserID   uint64
+	ClientID uint64
+}
+
+func AuthenticateRequest(request *http.Request) (*AccessDetails, rest_errors.RestErr) {
 	if request == nil {
-		return 0, rest_errors.NewUnauthorizedError("unauthorized")
+		return nil, rest_errors.NewUnauthorizedError("unauthorized")
 	}
 
 	tokenAuth, err := extractTokenMetadata(request)
 	if err != nil {
-		return 0, rest_errors.NewUnauthorizedError("unauthorized")
+		return nil, rest_errors.NewUnauthorizedError("unauthorized")
 	}
+
+	return tokenAuth, nil
 }
 
 func extractToken(r *http.Request) string {
@@ -74,18 +81,18 @@ func extractTokenMetadata(r *http.Request) (*AccessDetails, error) {
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
-		accessUuid, ok := claims["access_uuid"].(string)
-		if !ok {
-			return nil, err
-		}
 		userId, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["user_id"]), 10, 64)
 		if err != nil {
 			return nil, err
 		}
+		clientId, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["client_id"]), 10, 64)
+		if err != nil {
+			return nil, err
+		}
 		return &AccessDetails{
-			AccessUuid: accessUuid,
-			UserId:     userId,
+			UserID:   userId,
+			ClientID: clientId,
 		}, nil
 	}
-	return nil, err
+	return nil, fmt.Errorf("token not valid")
 }

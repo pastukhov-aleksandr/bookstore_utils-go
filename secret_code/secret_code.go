@@ -12,7 +12,7 @@ const (
 
 func init() {
 	if err := godotenv.Load(); err != nil {
-		panic("invalid access token")
+		panic("invalid env file load")
 	}
 }
 
